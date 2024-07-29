@@ -1,22 +1,36 @@
-require("dotenv").config();
+import express  from "express";
+import mongoose from "mongoose";
 
-const express = require("express");
-const { MongoClient } = require("mongodb");
-const routes = require("./routes");
-const connectToDatabase = require("./database");
+import User from "./models/User.js";
 
-connectToDatabase();
 
 const app = express();
-const port = 3333;
 
-const uri =
-  "mongodb+srv://admin:admin@cluster0.2vltt1i.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+app.use(express.json());
 
-// Adicione a lógica do seu app aqui, por exemplo:
-app.use((req, res, next) => {
-  req.db = db;
-  next();
+
+
+app.get("/users", async (request,response)=>{
+  const users = await User.find()
+
+  return response.json(users)
+})
+
+
+app.post("/users", async (request,response)=>{
+  const user = request.body
+
+
+const newUser = await User.create(user)
+
+return response.json(newUser);
+
 });
 
-app.use(routes);
+mongoose.connect("mongodb+srv://admin:admin@cluster0.ar7wfqb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+.then( ()=> console.log("BANCO DE DADOS CONECTADO"))
+.catch( () => console.log("DEU RUIM"))
+
+
+app.listen(3333);
